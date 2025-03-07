@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3533DDE2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserIPTracker.Tests", "UserIPTracker.Tests\UserIPTracker.Tests.csproj", "{D1721A99-F8C4-4FAC-BB40-D33570EAF59B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{59B4B757-AE6F-43F8-8E2E-A1D5BA17543E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{D1721A99-F8C4-4FAC-BB40-D33570EAF59B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1721A99-F8C4-4FAC-BB40-D33570EAF59B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1721A99-F8C4-4FAC-BB40-D33570EAF59B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59B4B757-AE6F-43F8-8E2E-A1D5BA17543E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59B4B757-AE6F-43F8-8E2E-A1D5BA17543E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59B4B757-AE6F-43F8-8E2E-A1D5BA17543E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59B4B757-AE6F-43F8-8E2E-A1D5BA17543E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,5 +52,6 @@ Global
 		{61EF2B8F-EFC5-43DD-BD7D-B82FD044D106} = {ECCE7968-1F2F-49AE-A121-4C3008AE4426}
 		{EA8A9900-2B2A-4391-AC3A-70CDB548EC50} = {ECCE7968-1F2F-49AE-A121-4C3008AE4426}
 		{D1721A99-F8C4-4FAC-BB40-D33570EAF59B} = {3533DDE2-044C-4A16-91B1-779DD99C69E5}
+		{59B4B757-AE6F-43F8-8E2E-A1D5BA17543E} = {ECCE7968-1F2F-49AE-A121-4C3008AE4426}
 	EndGlobalSection
 EndGlobal
