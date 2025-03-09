@@ -18,7 +18,7 @@ namespace Application.Services
 
         public async Task AddConnectionAsync(long userId, string ipAddress)
         {
-            await _userRepository.AddConnectionAsync(userId, ipAddress);
+            await _userRepository.AddUserConnectionAsync(userId, ipAddress);
             _cache.Remove($"UserIps_{userId}");
         }
 

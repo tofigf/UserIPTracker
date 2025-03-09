@@ -29,7 +29,7 @@ namespace UserIPTracker.Tests
             await _userService.AddConnectionAsync(userId, ipAddress);
 
             // Assert
-            _mockRepo.Verify(repo => repo.AddConnectionAsync(userId, ipAddress), Times.Once);
+            _mockRepo.Verify(repo => repo.AddUserConnectionAsync(userId, ipAddress), Times.Once);
         }
 
         [Fact]

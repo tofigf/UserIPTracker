@@ -14,16 +14,27 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task AddConnectionAsync(long userId, string ipAddress)
+        public async Task AddUserConnectionAsync(long userId, string ipAddress)
         {
-            _context.UserConnections.Add(new UserConnection
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                UserId = userId,
-                IpAddress = ipAddress
-            });
+                _context.UserConnections.Add(new UserConnection
+                {
+                    UserId = userId,
+                    IpAddress = ipAddress,
+                    ConnectedAt = DateTime.UtcNow
+                });
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+            }
         }
+
 
         public async Task<List<long>> SearchUsersByIpAsync(string ipPart)
         {
