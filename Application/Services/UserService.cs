@@ -4,6 +4,7 @@ using Infrastructure;
 using Infrastructure.Cache.UserIPTracker.Infrastructure.Cache;
 using Infrastructure.DTOs.Response;
 using Infrastructure.Kafka.UserIPTracker.Infrastructure.Kafka;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services
 {
@@ -13,12 +14,12 @@ namespace Application.Services
             private readonly KafkaProducer _kafkaProducer;
             private readonly RedisCacheService _cache;
 
-            public UserService(IUserRepository userRepository, KafkaProducer kafkaProducer, RedisCacheService cache)
+        public UserService(IUserRepository userRepository, KafkaProducer kafkaProducer, RedisCacheService cache)
             {
                 _userRepository = userRepository;
                 _kafkaProducer = kafkaProducer;
                 _cache = cache;
-            }
+        }
 
             public async Task AddConnectionAsync(ConnectUserRequest request)
             {

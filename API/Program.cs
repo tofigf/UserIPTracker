@@ -6,10 +6,16 @@ using Infrastructure.Kafka;
 using Infrastructure.Kafka.UserIPTracker.Infrastructure.Kafka;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day) 
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 

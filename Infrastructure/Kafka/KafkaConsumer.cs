@@ -3,6 +3,7 @@ using Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Infrastructure.Kafka
@@ -11,12 +12,14 @@ namespace Infrastructure.Kafka
         {
             private readonly IServiceScopeFactory _scopeFactory;
             private readonly IConfiguration _configuration;
+            private readonly ILogger<KafkaConsumer> _logger;
 
-            public KafkaConsumer(IServiceScopeFactory scopeFactory, IConfiguration configuration)
+        public KafkaConsumer(IServiceScopeFactory scopeFactory, IConfiguration configuration, ILogger<KafkaConsumer> logger)
             {
                 _scopeFactory = scopeFactory;
                 _configuration = configuration;
-            }
+                _logger = logger;
+        }
 
             protected override async Task ExecuteAsync(CancellationToken stoppingToken)
             {
@@ -48,15 +51,15 @@ namespace Infrastructure.Kafka
                         }
                         else
                         {
-                            Console.WriteLine("[ERROR] Kafka Consumer: Deserialized connection event is null.");
+                        _logger.LogError("[ERROR] Kafka Consumer: Deserialized connection event is null.");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[ERROR] Kafka Consumer: {ex.Message}");
-                    }
+
+                    _logger.LogError("Kafka Consumer Error: {Message}", ex.Message);
+                }
                 }
             }
         }
-
     }
