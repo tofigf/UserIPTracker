@@ -1,53 +1,71 @@
 ﻿using Moq;
-using Microsoft.Extensions.Caching.Memory;
-using Application.Services;
+using Infrastructure.Cache.UserIPTracker.Infrastructure.Cache;
+using Infrastructure.Kafka.UserIPTracker.Infrastructure.Kafka;
 using Domain.Interfaces;
+using Application.Services;
+using Infrastructure;
 
 namespace UserIPTracker.Tests
 {
-    public class UserServiceTests
-    {
-        private readonly Mock<IUserRepository> _mockRepo;
-        private readonly UserService _userService;
-        private readonly IMemoryCache _cache;
-
-        public UserServiceTests()
+        public class UserServiceTests
         {
-            _mockRepo = new Mock<IUserRepository>();
-            _cache = new MemoryCache(new MemoryCacheOptions());
-            _userService = new UserService(_mockRepo.Object, _cache);
-        }
+            private readonly Mock<IUserRepository> _mockRepo;
+            private readonly Mock<KafkaProducer> _mockKafkaProducer;
+            private readonly Mock<RedisCacheService> _mockCache;
+            private readonly UserService _userService;
 
-        [Fact]
-        public async Task AddConnectionAsync_ShouldCallRepositoryOnce()
-        {
-            // Arrange
-            long userId = 1;
-            string ipAddress = "192.168.1.1";
+            public UserServiceTests()
+            {
+                _mockRepo = new Mock<IUserRepository>();
+                _mockKafkaProducer = new Mock<KafkaProducer>();
+                _mockCache = new Mock<RedisCacheService>();
 
-            // Act
-            await _userService.AddConnectionAsync(userId, ipAddress);
+                _userService = new UserService(_mockRepo.Object, _mockKafkaProducer.Object, _mockCache.Object);
+            }
 
-            // Assert
-            _mockRepo.Verify(repo => repo.AddUserConnectionAsync(userId, ipAddress), Times.Once);
-        }
+            [Fact]
+            public async Task AddConnectionAsync_ShouldPublishToKafkaAndClearCache()
+            {
+                var request = new ConnectUserRequest { UserId = 1, IpAddress = "192.168.1.1" };
 
-        [Fact]
-        public async Task SearchUsersByIpAsync_ShouldReturnCorrectUsers()
-        {
-            // Arrange
-            string ipPart = "31.214";
-            var expectedUsers = new List<long> { 1, 2 };
+                await _userService.AddConnectionAsync(request);
 
-            _mockRepo.Setup(repo => repo.SearchUsersByIpAsync(ipPart))
-                     .ReturnsAsync(expectedUsers);
+                _mockKafkaProducer.Verify(kafka => kafka.PublishUserConnectionAsync(request.UserId, request.IpAddress), Times.Once);
+                _mockCache.Verify(cache => cache.RemoveCacheAsync($"UserIps_{request.UserId}"), Times.Once);
+            }
 
-            // Act
-            var result = await _userService.SearchUsersByIpAsync(ipPart);
+            [Fact]
+            public async Task SearchUsersByIpAsync_ShouldReturnCorrectUsers_FromCache()
+            {
+                string ipPart = "31.214";
+                var expectedUsers = new List<long> { 1, 2 };
 
-            // Assert
-            Assert.Equal(expectedUsers, result);
+                _mockCache.Setup(cache => cache.GetCacheAsync($"search:{ipPart}"))
+                          .ReturnsAsync(Newtonsoft.Json.JsonConvert.SerializeObject(expectedUsers));
+
+                var result = await _userService.SearchUsersByIpAsync(ipPart);
+
+                Assert.Equal(expectedUsers, result);
+                _mockRepo.Verify(repo => repo.SearchUsersByIpAsync(ipPart), Times.Never);
+            }
+
+            [Fact]
+            public async Task SearchUsersByIpAsync_ShouldReturnCorrectUsers_FromDatabaseIfCacheMiss()
+            {
+                string ipPart = "31.214";
+                var expectedUsers = new List<long> { 1, 2 };
+
+                _mockCache.Setup(cache => cache.GetCacheAsync($"search:{ipPart}"))
+                          .ReturnsAsync((string)null); 
+
+                _mockRepo.Setup(repo => repo.SearchUsersByIpAsync(ipPart))
+                         .ReturnsAsync(expectedUsers);
+
+                var result = await _userService.SearchUsersByIpAsync(ipPart);
+
+                Assert.Equal(expectedUsers, result);
+                _mockRepo.Verify(repo => repo.SearchUsersByIpAsync(ipPart), Times.Once);
+                _mockCache.Verify(cache => cache.SetCacheAsync($"search:{ipPart}", Newtonsoft.Json.JsonConvert.SerializeObject(expectedUsers), It.IsAny<System.TimeSpan>()), Times.Once);
+            }
         }
     }
-
-}

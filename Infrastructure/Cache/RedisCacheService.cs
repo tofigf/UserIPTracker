@@ -25,6 +25,11 @@ namespace Infrastructure.Cache
             {
                 return await _cache.StringGetAsync(key);
             }
+
+            public async Task RemoveCacheAsync(string key)
+            {
+                await _cache.KeyDeleteAsync(key);
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace API.Controllers
         [HttpPost("connect")]
         public async Task<IActionResult> ConnectUser([FromBody] ConnectUserRequest request)
         {
-            await _userService.AddConnectionAsync(request.UserId, request.IpAddress);
+            await _userService.AddConnectionAsync(request);
             return Ok();
         }
 

@@ -1,6 +1,9 @@
 using Application.Services;
 using Application.Services.Interfaces;
 using Domain.Interfaces;
+using Infrastructure.Cache.UserIPTracker.Infrastructure.Cache;
+using Infrastructure.Kafka;
+using Infrastructure.Kafka.UserIPTracker.Infrastructure.Kafka;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore; 
@@ -13,6 +16,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddMemoryCache();
+builder.Services.AddScoped<KafkaProducer>();
+builder.Services.AddSingleton<RedisCacheService>();
+builder.Services.AddHostedService<KafkaConsumer>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
