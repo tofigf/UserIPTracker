@@ -20,10 +20,16 @@ namespace Application.Services
                 _kafkaProducer = kafkaProducer;
                 _cache = cache;
         }
+   
 
-            public async Task AddConnectionAsync(ConnectUserRequest request)
+        public async Task AddConnectionAsync(ConnectUserRequest request)
             {
-                await _kafkaProducer.PublishUserConnectionAsync(request.UserId, request.IpAddress);
+            if (!IsValidIp(request.IpAddress))
+            {
+                throw new ArgumentException("Invalid IP address format.");
+            }
+
+            await _kafkaProducer.PublishUserConnectionAsync(request.UserId, request.IpAddress);
 
                 await _cache.RemoveCacheAsync($"UserIps_{request.UserId}");
             }
@@ -46,7 +52,7 @@ namespace Application.Services
             return usersFromRepo;
         }
 
-            public async Task<List<string>> GetUserIpAddressesAsync(long userId)
+        public async Task<List<string>> GetUserIpAddressesAsync(long userId)
             {
         
                 var cacheKey = $"UserIps_{userId}";
@@ -65,7 +71,7 @@ namespace Application.Services
                 return ips;
             }
 
-            public async Task<UserConnectionResponse?> GetLastConnectionAsync(long userId)
+        public async Task<UserConnectionResponse?> GetLastConnectionAsync(long userId)
             {
                 var cacheKey = $"last_connection:{userId}";
                 var cachedLastConnection = await _cache.GetCacheAsync(cacheKey);
@@ -89,5 +95,10 @@ namespace Application.Services
 
                 return response;
             }
+
+        private bool IsValidIp(string ipAddress)
+        {
+            return System.Net.IPAddress.TryParse(ipAddress, out _);
         }
+    }
     }

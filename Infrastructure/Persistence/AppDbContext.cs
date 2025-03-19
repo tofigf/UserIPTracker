@@ -12,14 +12,21 @@ namespace Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Define primary keys
             modelBuilder.Entity<User>().HasKey(u => u.Id);
             modelBuilder.Entity<UserConnection>().HasKey(uc => uc.Id);
 
-            // Define indexes for efficient querying
-            modelBuilder.Entity<UserConnection>().HasIndex(uc => uc.IpAddress);
-            modelBuilder.Entity<UserConnection>().HasIndex(uc => uc.UserId);
+            modelBuilder.Entity<UserConnection>()
+                .HasIndex(uc => uc.UserId)
+                .HasDatabaseName("idx_userconnections_userid");
+        
+            modelBuilder.Entity<UserConnection>()
+                .HasIndex(uc => uc.IpAddress)
+                .HasDatabaseName("idx_userconnections_ip")
+                .HasMethod("gist"); 
+
+            modelBuilder.Entity<UserConnection>()
+                .Property(uc => uc.IpAddress)
+                .HasColumnType("inet"); 
         }
     }
-
 }
