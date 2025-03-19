@@ -37,7 +37,7 @@
 ## **📌 How to Run the Project**
 ### **🔹 1️⃣ Clone the Repository**
 ```sh
-git clone https://github.com/yourusername/UserIPTracker.git
+git clone https://github.com/tofigf/UserIPTracker.git
 cd UserIPTracker
 docker-compose up -d
 dotnet ef migrations add InitialCreate --project Infrastructure --startup-project API
