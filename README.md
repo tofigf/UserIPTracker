@@ -46,7 +46,7 @@ dotnet run --project API
 
 
 
-## 🧑‍💻 Author
+## ** 🧑‍💻 Author
 **Tofig Farajullayev**  
 [GitHub Profile](https://github.com/tofigf)
 
