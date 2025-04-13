@@ -43,9 +43,9 @@ docker-compose up -d
 dotnet ef migrations add InitialCreate --project Infrastructure --startup-project API
 dotnet ef database update --project Infrastructure --startup-project API
 dotnet run --project API
- ` ``` `
+ ``` 
 
-
+---
 ## ** 🧑‍💻 Author
 **Tofig Farajullayev**  
 [GitHub Profile](https://github.com/tofigf)
